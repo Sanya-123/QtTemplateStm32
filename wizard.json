@@ -1,0 +1,172 @@
+{
+    "version": 1,
+    "supportedProjectTypes": [ "Qbs.QbsProject" ],
+    "id": "Qbs_ARM_project",
+    "category": "I.Projects",
+    "trDescription": "Creates a simple C application using Qbs to build for arm.",
+    "trDisplayName": "Qbs Application for arm",
+    "trDisplayCategory": "Non-Qt Project",
+    "icon": "../../global/consoleapplication.png",
+    "enabled": "%{JS: [ %{Plugins} ].indexOf('QbsProjectManager') >= 0}",
+
+    "options":
+    [
+        { "key": "QbsFile", "value": "%{JS: Util.fileName('%{ProjectDirectory}/%{ProjectName}', 'qbs')}" },
+        { "key": "CMakeFile", "value": "%{ProjectDirectory}/CMakeLists.txt" },
+        { "key": "CFileName", "value": "%{JS: 'main.' + Util.preferredSuffix('text/x-csrc')}" },
+        { "key": "IsTopLevelProject", "value": "%{JS: !'%{Exists:ProjectExplorer.Profile.Ids}'}" },
+		{ "key": "TypeDef", "value": "%{JS: '%{SerialController}' === 'stm32f1xx' ? '%{TypeF1}' : \
+			'%{SerialController}' === 'stm32f4xx' ? '%{TypeF4}' : 'asd' }" }
+    ],
+
+    "pages":
+    [
+        {
+            "trDisplayName": "Project Location",
+            "trShortTitle": "Location",
+            "typeId": "Project"
+        },
+        {
+            "trDisplayName": "Kit Selection",
+            "trShortTitle": "Kits",
+            "typeId": "Kits",
+            "enabled": "%{IsTopLevelProject}",
+            "data": { "projectFilePath": "%{QbsFile}" }
+        },
+        {
+            "trDisplayName": "Choose a Type Template",
+            "trShortTitle": "Details",
+            "typeId": "Fields",
+            "data" :
+            [
+				{
+                    "name": "SerialController",
+                    "trDisplayName": "Serial of controllers",
+                    "type": "ComboBox",
+                    "data":
+					{
+                        "index": 0,
+                        "items":[
+						{"trKey": "STM32F1","value":"stm32f1xx"}, 
+						{"trKey": "STM32F4","value":"stm32f4xx"}]
+					}
+				},
+                {
+                    "name": "TypeF1",
+                    "trDisplayName": "Type MK:",
+                    "type": "ComboBox",
+					"visible": "%{JS: '%{SerialController}' === 'stm32f1xx'}",
+                    "data":
+                    {
+                        "index": 0,
+                        "items":
+                        [
+                            "STM32F100xB",
+                            "STM32F100xE",
+                            "STM32F101x6",
+                            "STM32F101xB",
+                            "STM32F101xE",
+                            "STM32F101xG",
+                            "STM32F102x6",
+                            "STM32F102xB",
+                            "STM32F103x6",
+                            "STM32F103xB",
+                            "STM32F103xE",
+                            "STM32F103xG",
+                            "STM32F105xC",
+                            "STM32F107xC"
+                        ]
+                    }
+                },
+                {
+                    "name": "TypeF4",
+                    "trDisplayName": "Type MK:",
+                    "type": "ComboBox",
+					"visible": "%{JS: '%{SerialController}' === 'stm32f4xx'}",
+                    "data":
+                    {
+                        "index": 0,
+                        "items":
+                        [
+                            "STM32F401xC",
+                            "STM32F401xE",
+                            "STM32F405xx",
+                            "STM32F407xx",
+                            "STM32F410Tx",
+							"STM32F410Cx",
+                            "STM32F410Rx",
+                            "STM32F411xE",
+                            "STM32F412Cx",
+                            "STM32F412Zx",
+                            "STM32F412Vx",
+                            "STM32F412Rx",
+                            "STM32F413xx",
+                            "STM32F415xx",
+                            "STM32F417xx",
+                            "STM32F423xx",
+                            "STM32F427xx",
+                            "STM32F429xx",
+                            "STM32F437xx",
+                            "STM32F439xx",
+                            "STM32F446xx",
+                            "STM32F469xx",
+                            "STM32F479xx"
+                        ]
+                    }
+                },
+				{
+                    "name": "UseMath",
+                    "trDisplayName": "include math library",
+                    "type": "CheckBox",
+                    "data":
+					{
+						"checkedValue": "QObject",
+						"uncheckedValue": "false"
+					}
+				}
+            ]
+        },
+        {
+            "trDisplayName": "Project Management",
+            "trShortTitle": "Summary",
+            "typeId": "Summary"
+        }
+    ],
+    "generators":
+    [
+        {
+            "typeId": "File",
+            "data":
+            [
+                {
+                    "source": "%{SerialController}.qbs",
+                    "target": "%{QbsFile}",
+                    "openAsProject": true
+                },
+                {
+                    "source": "main.c",
+                    "target": "%{CFileName}",
+                    "openInEditor": true
+                },
+                {
+                    "source": "Driver",
+                    "target": "Driver"
+                },
+                {
+                    "source": "CMSIS_%{SerialController}",
+                    "target": "CMSIS"
+                },
+                {
+                    "source": "DSP_Lib",
+                    "target": "DSP_Lib",
+					"condition": "%{JS: %{UseMath} === 'true'}"
+                },
+                {
+                    "source": "../git.ignore",
+                    "target": "%{ProjectDirectory}/.gitignore",
+                    "condition": "%{JS: ! %{IsSubproject} && '%{VersionControl}' === 'G.Git'}"
+                }
+            ]
+        }
+    ]
+}
