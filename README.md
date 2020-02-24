@@ -2,6 +2,7 @@
 Template for QtCreator
 must be in `[Qtdir]\Tools\QtCreator\share\qtcreator\templates\wizards\projects\plainQtTemplateStm32`
 
+<img src="./dir.bmp" width="800">
 <img src="./newProject.bmp" width="800">
 <img src="./newProject1.bmp" width="800">
 <img src="./newProject2.bmp" width="800">
