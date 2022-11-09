@@ -8,13 +8,33 @@ Product {
     cpp.enableExceptions: false
     cpp.executableSuffix: ".elf"
 
+    property stringList stm32f0xx_param: ["-mcpu=cortex-m0plus", "-mfloat-abi=soft", "-mfpu=auto"]
+    property stringList stm32f1xx_param: ["-mcpu=cortex-m3", "-mfloat-abi=soft", "-mfpu=auto"]
+    property stringList stm32f2xx_param: ["-mcpu=cortex-m3", "-mfloat-abi=soft", "-mfpu=auto"]
+    property stringList stm32f3xx_param: ["-mcpu=cortex-m4", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16"]
+    property stringList stm32f4xx_param: ["-mcpu=cortex-m4", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16"]
+    property stringList stm32f7xx_param: ["-mcpu=cortex-m7", "-mfloat-abi=hard", "-mfpu=fpv5-sp-d16"]
+    property stringList stm32h7xx_param: ["-mcpu=cortex-m7", "-mfloat-abi=hard", "-mfpu=fpv5-d16"]
+    property stringList stm32g0xx_param: ["-mcpu=cortex-m0plus", "-mfloat-abi=soft", "-mfpu=auto"]
+    property stringList stm32g4xx_param: ["-mcpu=cortex-m4", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16"]
+    property stringList stm32l0xx_param: ["-mcpu=cortex-m0plus", "-mfloat-abi=soft", "-mfpu=auto"]
+    property stringList stm32l1xx_param: ["-mcpu=cortex-m3", "-mfloat-abi=soft", "-mfpu=auto"]
+    property stringList stm32l4xx_param: ["-mcpu=cortex-m4", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16"]
+    property stringList stm32l5xx_param: ["-mcpu=cortex-m33", "-mfloat-abi=hard", "-mfpu=fpv5-sp-d16"]
+    property stringList stm32u5xx_param: ["-mcpu=cortex-m33", "-mfloat-abi=hard", "-mfpu=fpv5-sp-d16"]
+    property stringList stm32wbxx_param: ["-mcpu=cortex-m4", "-mfloat-abi=hard", "-mfpu=fpv4-sp-d16"]
+    property stringList stm32wlxx_cm4_param: ["-mcpu=cortex-m4", "-mfloat-abi=soft", "-mfpu=auto"]
+    property stringList stm32wlxx_cm0_param: ["-mcpu=cortex-m0plus", "-mfloat-abi=soft", "-mfpu=auto"]
+
+    property stringList cpuParam: %{SerialController}_param
+
     cpp.defines: [
         "%{TypeDef}",
     ]
 
     files: [
         "CMSIS/Source/Templates/gcc/startup_%{TypeDef}.s",
-        "CMSIS/Source/Templates/system_stm32f4xx.c",
+        "CMSIS/Source/Templates/system_%{SerialController}.c",
         "*.c",
     ]
 
@@ -23,13 +43,16 @@ Product {
         "Driver/",
         "./",
     ]
+    
+    cpp.dynamicLibraries: [
+
+    ]
 
     cpp.driverFlags: [
         "-mthumb",
-        "-mcpu=cortex-m4",
-        "-mfloat-abi=hard",
-        //"-msoft-float",
-        "-mfpu=fpv4-sp-d16",
+        cpuParam[0],
+        cpuParam[1],
+        cpuParam[2],
         "-fno-strict-aliasing",
         "-fdata-sections",
         "-ffunction-sections",
@@ -54,9 +77,11 @@ Product {
         "-print-memory-usage",
         "-start-group",
         "-gc-sections",
+        "-Map=output.map",
         "-lnosys",
         "-nostdlib",
         "-T" + path + "/%{TypeDef}_FLASH.ld",
+        "-end-group",
     ]
 
     Properties {

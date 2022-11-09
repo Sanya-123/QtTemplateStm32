@@ -1,22 +1,23 @@
 {
     "version": 1,
-    "supportedProjectTypes": [ "Qbs.QbsProject" ],
-    "id": "Qbs_ARM_project",
+    "supportedProjectTypes": [ "CMakeProjectManager.CMakeProject", "Qbs.QbsProject" ],
+    "id": "ARM_project",
     "category": "I.Projects",
-    "trDescription": "Creates a simple C application using Qbs to build for arm.",
-    "trDisplayName": "Qbs Application for arm",
+    "trDescription": "Creates a simple C application for arm.",
+    "trDisplayName": "Application for arm",
     "trDisplayCategory": "Non-Qt Project",
     "icon": "../../global/consoleapplication.png",
-    "enabled": "%{JS: [ %{Plugins} ].indexOf('QbsProjectManager') >= 0}",
+    "enabled": "%{JS: value('Plugins').indexOf('CppEditor') >= 0 && (value('Plugins').indexOf('QbsProjectManager') >= 0 || value('Plugins').indexOf('CMakeProjectManager') >= 0)}",
 
     "options":
     [
+        { "key": "ProjectFile", "value": "%{JS: value('BuildSystem') === 'cmake' ? value('CMakeFile') : value('QbsFile')}" },
         { "key": "QbsFile", "value": "%{JS: Util.fileName('%{ProjectDirectory}/%{ProjectName}', 'qbs')}" },
         { "key": "CMakeFile", "value": "%{ProjectDirectory}/CMakeLists.txt" },
         { "key": "CFileName", "value": "%{JS: 'main.' + Util.preferredSuffix('text/x-csrc')}" },
         { "key": "IsTopLevelProject", "value": "%{JS: !'%{Exists:ProjectExplorer.Profile.Ids}'}" },
 		{ "key": "TypeDef", "value": "%{JS: '%{SerialController}' === 'stm32f1xx' ? '%{TypeF1}' : \
-			'%{SerialController}' === 'stm32f4xx' ? '%{TypeF4}' : 'asd' }" }
+			                         '%{SerialController}' === 'stm32f4xx' ? '%{TypeF4}' : ' ' }" }
     ],
 
     "pages":
@@ -25,6 +26,38 @@
             "trDisplayName": "Project Location",
             "trShortTitle": "Location",
             "typeId": "Project"
+        },
+        {
+            "trDisplayName": "Define Build System",
+            "trShortTitle": "Build System",
+            "typeId": "Fields",
+            "enabled": "%{IsTopLevelProject}",
+            "data":
+            [
+                {
+                    "name": "BuildSystem",
+                    "trDisplayName": "Build system:",
+                    "type": "ComboBox",
+                    "persistenceKey": "BuildSystemType",
+                    "data":
+                    {
+                        "index": 0,
+                        "items":
+                        [
+                            {
+                                "trKey": "CMake",
+                                "value": "cmake",
+                                "condition": "%{JS: value('Plugins').indexOf('CMakeProjectManager') >= 0}"
+                            },
+                            {
+                                "trKey": "Qbs",
+                                "value": "qbs",
+                                "condition": "%{JS: value('Plugins').indexOf('QbsProjectManager') >= 0}"
+                            }
+                        ]
+                    }
+                }
+            ]
         },
         {
             "trDisplayName": "Kit Selection",
@@ -114,6 +147,26 @@
                         ]
                     }
                 },
+                {
+                    "name": "SizeRAM",
+                    "trDisplayName": "size RAM memory [kB]",
+                    "type": "LineEdit",
+                    "data": 
+                    {
+                        "trPlaceholder": "Enter memory size in kB",
+                        "validator": "(?:[1-9]{1}[0-9]{0,10})"
+                    }
+				},
+                {
+                    "name": "SizeFlash",
+                    "trDisplayName": "size FLASH memory [kB]",
+                    "type": "LineEdit",
+                    "data": 
+                    {
+                        "trPlaceholder": "Enter memory size in kB",
+                        "validator": "(?:[1-9]{1}[0-9]{0,10})"
+                    }
+				},
 				{
                     "name": "UseMath",
                     "trDisplayName": "include math library",
@@ -139,13 +192,29 @@
             "data":
             [
                 {
-                    "source": "%{SerialController}.qbs",
+                    "source": "CMakeLists.txt",
+                    "openAsProject": true,
+                    "condition": "%{JS: value('BuildSystem') === 'cmake'}"
+                },
+                {
+                    "source": "cmake",
+                    "target": "cmake",
+                    "condition": "%{JS: value('BuildSystem') === 'cmake'}"
+                },
+                {
+                    "source": "stm32xxxx.qbs",
                     "target": "%{QbsFile}",
-                    "openAsProject": true
+                    "openAsProject": true,
+                    "condition": "%{JS: value('BuildSystem') === 'qbs'}"
                 },
                 {
                     "source": "main.c",
                     "target": "%{CFileName}",
+                    "openInEditor": true
+                },
+                {
+                    "source": "linkers/_FLASH.ld",
+                    "target": "%{TypeDef}_FLASH.ld",
                     "openInEditor": true
                 },
                 {
