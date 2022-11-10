@@ -13,5 +13,4 @@ NOTE uploading files lasts ~ 1.2 minutes without library math faster
 
 # TODO
 - [ ] Add include source math lib in .qbs
-- [ ] Add serial F0,F2,F3,F7
-- [ ] Add lincers failes
+- [ ] Add serial F0,F2,F7,L0,L1,L4,L5,U5,WB,WL

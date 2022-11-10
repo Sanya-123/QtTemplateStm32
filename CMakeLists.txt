@@ -42,20 +42,24 @@ set(CPU_PARAMETERS
 
 # Sources
 file(GLOB_RECURSE _SOURCE "")
-set(SOURCE  ${_SOURCE})
+set(SOURCE  ${_SOURCE} "main.c"
+            "CMSIS/Source/Templates/gcc/startup_%{TypeDef}.s"
+            "CMSIS/Source/Templates/system_%{SerialController}.c")
 
 # Include directories for each compiler
-set(INCLUDE)
+set(INCLUDE "CMSIS/Include/"
+            "Driver/"
+            "./")
 
 # Symbols definition for each compiler
-set(DEFINES)
+set(DEFINES "%{TypeDef}")
 
 # Link directories and names of libraries
 set(LINK_DIRS)
 set(LINK_LIBS)
 
 # Linker script
-set(LINKER_SCRIPT "%{TypeDef}_FLASH.ld")
+set(LINKER_SCRIPT "${CMAKE_SOURCE_DIR}/%{TypeDef}_FLASH.ld")
 
 # Compiler options
 set(COMPILER_OPTS "-Os" "-g0")

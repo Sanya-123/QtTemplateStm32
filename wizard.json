@@ -16,8 +16,11 @@
         { "key": "CMakeFile", "value": "%{ProjectDirectory}/CMakeLists.txt" },
         { "key": "CFileName", "value": "%{JS: 'main.' + Util.preferredSuffix('text/x-csrc')}" },
         { "key": "IsTopLevelProject", "value": "%{JS: !'%{Exists:ProjectExplorer.Profile.Ids}'}" },
-		{ "key": "TypeDef", "value": "%{JS: '%{SerialController}' === 'stm32f1xx' ? '%{TypeF1}' : \
-			                         '%{SerialController}' === 'stm32f4xx' ? '%{TypeF4}' : ' ' }" }
+        { "key": "TypeDef", "value": "%{JS: '%{SerialController}' === 'stm32f1xx' ? '%{TypeF1}' : \
+                                            '%{SerialController}' === 'stm32f3xx' ? '%{TypeF3}' : \
+                                            '%{SerialController}' === 'stm32f4xx' ? '%{TypeF4}' : \
+                                            '%{SerialController}' === 'stm32g0xx' ? '%{TypeG0}' : \
+                                            '%{SerialController}' === 'stm32g4xx' ? '%{TypeG4}' : ' ' }" }
     ],
 
     "pages":
@@ -64,7 +67,7 @@
             "trShortTitle": "Kits",
             "typeId": "Kits",
             "enabled": "%{IsTopLevelProject}",
-            "data": { "projectFilePath": "%{QbsFile}" }
+            "data": { "projectFilePath": "%{ProjectFile}" }
         },
         {
             "trDisplayName": "Choose a Type Template",
@@ -72,23 +75,28 @@
             "typeId": "Fields",
             "data" :
             [
-				{
+                {
                     "name": "SerialController",
                     "trDisplayName": "Serial of controllers",
                     "type": "ComboBox",
                     "data":
-					{
+                    {
                         "index": 0,
-                        "items":[
-						{"trKey": "STM32F1","value":"stm32f1xx"}, 
-						{"trKey": "STM32F4","value":"stm32f4xx"}]
-					}
-				},
+                        "items":
+                        [
+                            {"trKey": "STM32F1","value":"stm32f1xx"},
+                            {"trKey": "STM32F3","value":"stm32f3xx"},
+                            {"trKey": "STM32F4","value":"stm32f4xx"},
+                            {"trKey": "STM32G0","value":"stm32g0xx"},
+                            {"trKey": "STM32G4","value":"stm32g4xx"}
+                        ]
+                    }
+                },
                 {
                     "name": "TypeF1",
                     "trDisplayName": "Type MK:",
                     "type": "ComboBox",
-					"visible": "%{JS: '%{SerialController}' === 'stm32f1xx'}",
+                    "visible": "%{JS: '%{SerialController}' === 'stm32f1xx'}",
                     "data":
                     {
                         "index": 0,
@@ -112,10 +120,37 @@
                     }
                 },
                 {
+                    "name": "TypeF3",
+                    "trDisplayName": "Type MK:",
+                    "type": "ComboBox",
+                    "visible": "%{JS: '%{SerialController}' === 'stm32f3xx'}",
+                    "data":
+                    {
+                        "index": 0,
+                        "items":
+                        [
+                            "STM32F301x8",
+                            "STM32F302x8",
+                            "STM32F302xC",
+                            "STM32F302xE",
+                            "STM32F303x8",
+                            "STM32F303xC",
+                            "STM32F303xE",
+                            "STM32F318xx",
+                            "STM32F328xx",
+                            "STM32F334x8",
+                            "STM32F358xx",
+                            "STM32F373xC",
+                            "STM32F378xx",
+                            "STM32F398xx"
+                        ]
+                    }
+                },
+                {
                     "name": "TypeF4",
                     "trDisplayName": "Type MK:",
                     "type": "ComboBox",
-					"visible": "%{JS: '%{SerialController}' === 'stm32f4xx'}",
+                    "visible": "%{JS: '%{SerialController}' === 'stm32f4xx'}",
                     "data":
                     {
                         "index": 0,
@@ -126,7 +161,7 @@
                             "STM32F405xx",
                             "STM32F407xx",
                             "STM32F410Tx",
-							"STM32F410Cx",
+                            "STM32F410Cx",
                             "STM32F410Rx",
                             "STM32F411xE",
                             "STM32F412Cx",
@@ -148,35 +183,82 @@
                     }
                 },
                 {
+                    "name": "TypeG0",
+                    "trDisplayName": "Type MK:",
+                    "type": "ComboBox",
+                    "visible": "%{JS: '%{SerialController}' === 'stm32g0xx'}",
+                    "data":
+                    {
+                        "index": 0,
+                        "items":
+                        [
+                            "STM32G0B0xx",
+                            "STM32G0B1xx",
+                            "STM32G0C1xx",
+                            "STM32G030xx",
+                            "STM32G031xx",
+                            "STM32G041xx",
+                            "STM32G050xx",
+                            "STM32G051xx",
+                            "STM32G061xx",
+                            "STM32G070xx",
+                            "STM32G071xx",
+                            "STM32G081xx"
+                        ]
+                    }
+                },
+                {
+                    "name": "TypeG4",
+                    "trDisplayName": "Type MK:",
+                    "type": "ComboBox",
+                    "visible": "%{JS: '%{SerialController}' === 'stm32g4xx'}",
+                    "data":
+                    {
+                        "index": 0,
+                        "items":
+                        [
+                            "STM32G431xx",
+                            "STM32G441xx",
+                            "STM32G471xx",
+                            "STM32G473xx",
+                            "STM32G474xx",
+                            "STM32G484xx",
+                            "STM32G491xx",
+                            "STM32G4A1xx",
+                            "STM32GBK1CB"
+                        ]
+                    }
+                },
+                {
                     "name": "SizeRAM",
                     "trDisplayName": "size RAM memory [kB]",
                     "type": "LineEdit",
-                    "data": 
+                    "data":
                     {
                         "trPlaceholder": "Enter memory size in kB",
                         "validator": "(?:[1-9]{1}[0-9]{0,10})"
                     }
-				},
+                },
                 {
                     "name": "SizeFlash",
                     "trDisplayName": "size FLASH memory [kB]",
                     "type": "LineEdit",
-                    "data": 
+                    "data":
                     {
                         "trPlaceholder": "Enter memory size in kB",
                         "validator": "(?:[1-9]{1}[0-9]{0,10})"
                     }
-				},
-				{
+                },
+                {
                     "name": "UseMath",
                     "trDisplayName": "include math library",
                     "type": "CheckBox",
                     "data":
-					{
-						"checkedValue": "QObject",
-						"uncheckedValue": "false"
-					}
-				}
+                    {
+                        "checkedValue": "QObject",
+                        "uncheckedValue": "false"
+                    }
+                }
             ]
         },
         {
@@ -187,55 +269,59 @@
     ],
     "generators":
     [
+    {
+    "typeId": "File",
+    "data":
+    [
         {
-            "typeId": "File",
-            "data":
-            [
-                {
-                    "source": "CMakeLists.txt",
-                    "openAsProject": true,
-                    "condition": "%{JS: value('BuildSystem') === 'cmake'}"
-                },
-                {
-                    "source": "cmake",
-                    "target": "cmake",
-                    "condition": "%{JS: value('BuildSystem') === 'cmake'}"
-                },
-                {
-                    "source": "stm32xxxx.qbs",
-                    "target": "%{QbsFile}",
-                    "openAsProject": true,
-                    "condition": "%{JS: value('BuildSystem') === 'qbs'}"
-                },
-                {
-                    "source": "main.c",
-                    "target": "%{CFileName}",
-                    "openInEditor": true
-                },
-                {
-                    "source": "linkers/_FLASH.ld",
-                    "target": "%{TypeDef}_FLASH.ld",
-                    "openInEditor": true
-                },
-                {
-                    "source": "Driver",
-                    "target": "Driver"
-                },
-                {
-                    "source": "CMSIS_%{SerialController}",
-                    "target": "CMSIS"
-                },
-                {
-                    "source": "DSP_Lib",
-                    "target": "DSP_Lib",
-					"condition": "%{JS: %{UseMath} === 'true'}"
-                },
-                {
-                    "source": "../git.ignore",
-                    "target": "%{ProjectDirectory}/.gitignore",
-                    "condition": "%{JS: ! %{IsSubproject} && '%{VersionControl}' === 'G.Git'}"
-                }
-            ]
+            "source": "CMakeLists.txt",
+            "openAsProject": true,
+            "condition": "%{JS: value('BuildSystem') === 'cmake'}"
+        },
+        {
+            "source": "cmake",
+            "target": "cmake",
+            "condition": "%{JS: value('BuildSystem') === 'cmake'}"
+        },
+        {
+            "source": "stm32xxxx.qbs",
+            "target": "%{QbsFile}",
+            "openAsProject": true,
+            "condition": "%{JS: value('BuildSystem') === 'qbs'}"
+        },
+        {
+            "source": "main.c",
+            "target": "%{CFileName}",
+            "openInEditor": true
+        },
+        {
+            "source": "stm32.h",
+            "target": "stm32.h"
+        },
+        {
+            "source": "linkers/_FLASH.ld",
+            "target": "%{TypeDef}_FLASH.ld",
+            "openInEditor": true
+        },
+        {
+            "source": "Driver",
+            "target": "Driver"
+        },
+        {
+            "source": "CMSIS_%{SerialController}",
+            "target": "CMSIS"
+        },
+        {
+            "source": "DSP_Lib",
+            "target": "DSP_Lib",
+            "condition": "%{JS: %{UseMath} === 'true'}"
+        },
+        {
+            "source": "../git.ignore",
+            "target": "%{ProjectDirectory}/.gitignore",
+            "condition": "%{JS: ! %{IsSubproject} && '%{VersionControl}' === 'G.Git'}"
+        }
+        ]
         }
     ]
 }
