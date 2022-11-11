@@ -1,12 +1,23 @@
 #ifndef STM32_H
 #define STM32_H
 
+#if defined (STM32F030x6) || defined (STM32F030x8) || defined (STM32F030xC) || defined (STM32F031x6) || \
+    defined (STM32F038xx) || defined (STM32F042x6) || defined (STM32F048xx) || defined (STM32F051x8) || \
+    defined (STM32F058xx) || defined (STM32F070x6) || defined (STM32F070xB) || defined (STM32F071xB) || \
+    defined (STM32F072xB) || defined (STM32F078xx) || defined (STM32F091xC) || defined (STM32F098xx)
+#include "stm32f0xx.h"
+#endif
+
 #if defined (STM32F100xB) || defined (STM32F100xE) || defined (STM32F101x6) || \\
     defined (STM32F101xB) || defined (STM32F101xE) || defined (STM32F101xG) || \\
     defined (STM32F102x6) || defined (STM32F102xB) || defined (STM32F103x6) || \\
     defined (STM32F103xB) || defined (STM32F103xE) || defined (STM32F103xG) || \\
     defined (STM32F105xC) || defined (STM32F107xC)
 #include "stm32f1xx.h"
+#endif
+
+#if defined (STM32F205xx) || defined (STM32F215xx) || defined (STM32F207xx) || defined (STM32F217xx)
+#include "stm32f2xx.h"
 #endif
 
 #if defined (STM32F301x8) || defined (STM32F302x8) || defined (STM32F318xx) || \
@@ -26,6 +37,20 @@
 #include "stm32f4xx.h"
 #endif
 
+#if defined (STM32F756xx) || defined (STM32F746xx) || defined (STM32F745xx) || defined (STM32F765xx) || \
+    defined (STM32F767xx) || defined (STM32F769xx) || defined (STM32F777xx) || defined (STM32F779xx) || \
+    defined (STM32F722xx) || defined (STM32F723xx) || defined (STM32F732xx) || defined (STM32F733xx) || \
+    defined (STM32F730xx) || defined (STM32F750xx)
+#include "stm32f7xx.h"
+#endif
+
+#if defined (STM32H743xx) || defined (STM32H753xx)  || defined (STM32H750xx) || defined (STM32H742xx) || \
+    defined (STM32H745xx) || defined (STM32H745xG)  || defined (STM32H755xx)  || defined (STM32H747xx) || defined (STM32H747xG)|| defined (STM32H757xx) || \
+    defined (STM32H7A3xx) || defined (STM32H7A3xxQ) || defined (STM32H7B3xx) || defined (STM32H7B3xxQ) || defined (STM32H7B0xx)  || defined (STM32H7B0xxQ) || \
+    defined (STM32H735xx) || defined (STM32H733xx)  || defined (STM32H730xx) || defined (STM32H730xxQ)  || defined (STM32H725xx) || defined (STM32H723xx)
+#include "stm32h7xx.h"
+#endif
+
 #if defined (STM32G071xx) || defined (STM32G081xx) || defined (STM32G070xx) || \\
     defined (STM32G030xx) || defined (STM32G031xx) || defined (STM32G041xx) || \\
     defined (STM32G0B0xx) || defined (STM32G0B1xx) || defined (STM32G0C1xx) || \\
@@ -37,6 +62,48 @@
     defined (STM32G473xx) || defined (STM32G474xx) || defined (STM32G484xx) || \
     defined (STM32GBK1CB) || defined (STM32G491xx) || defined (STM32G4A1xx)
 #include "stm32g4xx.h"
+#endif
+
+#if defined (STM32L010x4) || defined (STM32L010x6) || defined (STM32L010x8) || defined (STM32L010xB) || \
+    defined (STM32L011xx) || defined (STM32L021xx) || defined (STM32L031xx) || defined (STM32L041xx) || \
+    defined (STM32L051xx) || defined (STM32L052xx) || defined (STM32L053xx) || defined (STM32L062xx) || \
+    defined (STM32L063xx) || defined (STM32L071xx) || defined (STM32L072xx) || defined (STM32L073xx) || \
+    defined (STM32L081xx) || defined (STM32L082xx) || defined (STM32L083xx)
+#include "stm32l0xx.h"
+#endif
+
+#if defined (STM32L100xB) || defined (STM32L100xBA) || defined (STM32L100xC) || defined (STM32L151xB) || \
+    defined (STM32L151xBA) || defined (STM32L151xC) || defined (STM32L151xCA) || defined (STM32L151xD) || \
+    defined (STM32L151xDX) || defined (STM32L151xE) || defined (STM32L152xB) || defined (STM32L152xBA) || \
+    defined (STM32L152xC) || defined (STM32L152xCA) || defined (STM32L152xD) || defined (STM32L152xDX) || \
+    defined (STM32L152xE) || defined (STM32L162xC) || defined (STM32L162xCA) || defined (STM32L162xD) || \
+    defined (STM32L162xDX) || defined (STM32L162xE)
+#include "stm32l1xx.h"
+#endif
+
+#if defined (STM32L412xx) || defined (STM32L422xx) || defined (STM32L431xx) || defined (STM32L432xx) || \
+    defined (STM32L433xx) || defined (STM32L442xx) || defined (STM32L443xx) || defined (STM32L451xx) || \
+    defined (STM32L452xx) || defined (STM32L462xx) || defined (STM32L471xx) || defined (STM32L475xx) || \
+    defined (STM32L476xx) || defined (STM32L485xx) || defined (STM32L486xx) || defined (STM32L496xx) || \
+    defined (STM32L4A6xx) || defined (STM32L4P5xx) || defined (STM32L4Q5xx) || defined (STM32L4R5xx) || \
+    defined (STM32L4R7xx) || defined (STM32L4R9xx) || defined (STM32L4S5xx) || defined (STM32L4S7xx) || \
+    defined (STM32L4S9xx)
+#include "stm32l4xx.h"
+#endif
+
+#if defined (STM32L552xx) || defined (STM32L562xx)
+#include "stm32l5xx.h"
+#endif
+
+#if defined (STM32U575xx) || defined (STM32U585xx) || defined (STM32U595xx) || \
+    defined (STM32U599xx) || defined (STM32U5A5xx) || defined (STM32U5A9xx)
+#include "stm32u5xx.h"
+#endif
+
+#if defined (STM32WB1Mxx) || defined (STM32WB5Mxx) || defined (STM32WB10xx) || \
+    defined (STM32WB15xx) || defined (STM32WB30xx) || defined (STM32WB35xx) || \
+    defined (STM32WB50xx) || defined (STM32WB55xx)
+#include "stm32wbxx.h"
 #endif
 
 #endif // STM32_H
