@@ -1,11 +1,10 @@
 /*
 *****************************************************************************
 **
-
-**  File        : LinkerScript.ld
+**  File        : STM32F100XB_FLASH.ld
 **
-**  Abstract    : Linker script for STM32F407VGTx Device with
-**                1024KByte FLASH, 128KByte RAM
+**  Abstract    : Linker script for STM32F100xB Device with
+**                128KByte FLASH, 8KByte RAM
 **
 **                Set heap size, stack size and stack location according
 **                to application requirements.
@@ -54,12 +53,6 @@ SECTIONS
     . = ALIGN(4);
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
-  } >FLASH
-
-  .descriptor :
-  {
-    . = ALIGN(128);
-    KEEP(*(.descriptor)) /* Startup code */
   } >FLASH
 
   /* The program code and other data goes into FLASH */

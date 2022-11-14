@@ -1,11 +1,13 @@
 /*
-*****************************************************************************
+******************************************************************************
 **
-
 **  File        : LinkerScript.ld
 **
-**  Abstract    : Linker script for STM32F407VGTx Device with
-**                1024KByte FLASH, 128KByte RAM
+**  Author      : STM32CubeIDE
+**
+**  Abstract    : Linker script for STM32U599xJ Device from STM32U5 series
+**                      4096Kbytes FLASH
+**                      2528Kbytes RAM
 **
 **                Set heap size, stack size and stack location according
 **                to application requirements.
@@ -14,17 +16,19 @@
 **
 **  Target      : STMicroelectronics STM32
 **
-**
-**  Distribution: The file is distributed as is, without any warranty
+**  Distribution: The file is distributed as is without any warranty
 **                of any kind.
 **
-**  (c)Copyright Ac6.
-**  You may use this file as-is or modify it according to the needs of your
-**  project. Distribution of this file (unmodified or modified) is not
-**  permitted. Ac6 permit registered System Workbench for MCU users the
-**  rights to distribute the assembled, compiled & linked contents of this
-**  file as part of an application binary file, provided that it is built
-**  using the System Workbench for MCU toolchain.
+*****************************************************************************
+** @attention
+**
+** <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
+** All rights reserved.</center></h2>
+**
+** This software component is licensed by ST under BSD 3-Clause license,
+** the "License"; You may not use this file except in compliance with the
+** License. You may obtain a copy of the License at:
+**                        opensource.org/licenses/BSD-3-Clause
 **
 *****************************************************************************
 */
@@ -42,30 +46,22 @@ _Min_Stack_Size = 0x400; /* required amount of stack */
 MEMORY
 {
 RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = %{SizeRAM}K
+SRAM4 (xrw) 	: ORIGIN = 0x28000000, LENGTH = 16K
 FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = %{SizeFlash}K
 }
 
 /* Define output sections */
 SECTIONS
 {
-  /* The startup code goes first into FLASH */
+  /* The startup code into "FLASH" Rom type memory */
   .isr_vector :
   {
-    . = ALIGN(4);
     KEEP(*(.isr_vector)) /* Startup code */
-    . = ALIGN(4);
   } >FLASH
 
-  .descriptor :
-  {
-    . = ALIGN(128);
-    KEEP(*(.descriptor)) /* Startup code */
-  } >FLASH
-
-  /* The program code and other data goes into FLASH */
+  /* The program code and other data into "FLASH" Rom type memory */
   .text :
   {
-    . = ALIGN(4);
     *(.text)           /* .text sections (code) */
     *(.text*)          /* .text* sections (code) */
     *(.glue_7)         /* glue arm to thumb code */
@@ -75,32 +71,35 @@ SECTIONS
     KEEP (*(.init))
     KEEP (*(.fini))
 
-    . = ALIGN(4);
     _etext = .;        /* define a global symbols at end of code */
   } >FLASH
 
-  /* Constant data goes into FLASH */
+  /* Constant data into "FLASH" Rom type memory */
   .rodata :
   {
-    . = ALIGN(4);
     *(.rodata)         /* .rodata sections (constants, strings, etc.) */
     *(.rodata*)        /* .rodata* sections (constants, strings, etc.) */
-    . = ALIGN(4);
   } >FLASH
 
-  .ARM.extab   : { *(.ARM.extab* .gnu.linkonce.armextab.*) } >FLASH
-  .ARM : {
+  .ARM.extab :
+  {
+    *(.ARM.extab* .gnu.linkonce.armextab.*)
+  } >FLASH
+
+  .ARM :
+  {
     __exidx_start = .;
     *(.ARM.exidx*)
     __exidx_end = .;
   } >FLASH
 
-  .preinit_array     :
+  .preinit_array :
   {
     PROVIDE_HIDDEN (__preinit_array_start = .);
     KEEP (*(.preinit_array*))
     PROVIDE_HIDDEN (__preinit_array_end = .);
   } >FLASH
+
   .init_array :
   {
     PROVIDE_HIDDEN (__init_array_start = .);
@@ -108,6 +107,7 @@ SECTIONS
     KEEP (*(.init_array*))
     PROVIDE_HIDDEN (__init_array_end = .);
   } >FLASH
+
   .fini_array :
   {
     PROVIDE_HIDDEN (__fini_array_start = .);
@@ -116,39 +116,36 @@ SECTIONS
     PROVIDE_HIDDEN (__fini_array_end = .);
   } >FLASH
 
-  /* used by the startup to initialize data */
+  /* Used by the startup to initialize data */
   _sidata = LOADADDR(.data);
 
-  /* Initialized data sections goes into RAM, load LMA copy after code */
+  /* Initialized data sections into "RAM" Ram type memory */
   .data :
   {
-    . = ALIGN(4);
     _sdata = .;        /* create a global symbol at data start */
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
+    *(.RamFunc)        /* .RamFunc sections */
+    *(.RamFunc*)       /* .RamFunc* sections */
 
-    . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
   } >RAM AT> FLASH
 
-
-  /* Uninitialized data section */
-  . = ALIGN(4);
+  /* Uninitialized data section into "RAM" Ram type memory */
   .bss :
   {
-    /* This is used by the startup in order to initialize the .bss secion */
+    /* This is used by the startup in order to initialize the .bss section */
     _sbss = .;         /* define a global symbol at bss start */
     __bss_start__ = _sbss;
     *(.bss)
     *(.bss*)
     *(COMMON)
 
-    . = ALIGN(4);
     _ebss = .;         /* define a global symbol at bss end */
     __bss_end__ = _ebss;
   } >RAM
 
-  /* User_heap_stack section, used to check that there is enough RAM left */
+  /* User_heap_stack section, used to check that there is enough "RAM" Ram type memory left */
   ._user_heap_stack :
   {
     . = ALIGN(8);
@@ -159,8 +156,7 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
-
-  /* Remove information from the standard libraries */
+  /* Remove information from the compiler libraries */
   /DISCARD/ :
   {
     libc.a ( * )

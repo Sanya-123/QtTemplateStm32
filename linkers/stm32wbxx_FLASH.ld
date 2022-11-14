@@ -1,11 +1,13 @@
 /*
-*****************************************************************************
+******************************************************************************
 **
-
 **  File        : LinkerScript.ld
 **
-**  Abstract    : Linker script for STM32F407VGTx Device with
-**                1024KByte FLASH, 128KByte RAM
+**  Author      : STM32CubeIDE
+**
+**  Abstract    : Linker script for STM32WB15xC Device
+**                      320Kbytes FLASH
+**                       48Kbytes RAM
 **
 **                Set heap size, stack size and stack location according
 **                to application requirements.
@@ -14,17 +16,18 @@
 **
 **  Target      : STMicroelectronics STM32
 **
-**
-**  Distribution: The file is distributed as is, without any warranty
+**  Distribution: The file is distributed as is without any warranty
 **                of any kind.
 **
-**  (c)Copyright Ac6.
-**  You may use this file as-is or modify it according to the needs of your
-**  project. Distribution of this file (unmodified or modified) is not
-**  permitted. Ac6 permit registered System Workbench for MCU users the
-**  rights to distribute the assembled, compiled & linked contents of this
-**  file as part of an application binary file, provided that it is built
-**  using the System Workbench for MCU toolchain.
+*****************************************************************************
+** @attention
+**
+** Copyright (c) 2020 STMicroelectronics.
+** All rights reserved.
+**
+** This software is licensed under terms that can be found in the LICENSE file
+** in the root directory of this software component.
+** If no LICENSE file comes with this software, it is provided AS-IS.
 **
 *****************************************************************************
 */
@@ -35,14 +38,15 @@ ENTRY(Reset_Handler)
 /* Highest address of the user mode stack */
 _estack = ORIGIN(RAM) + LENGTH(RAM);    /* end of RAM */
 /* Generate a link error if heap and stack don't fit into RAM */
-_Min_Heap_Size = 0x200;      /* required amount of heap  */
-_Min_Stack_Size = 0x400; /* required amount of stack */
+_Min_Heap_Size = 0x400;      /* required amount of heap  */
+_Min_Stack_Size = 0x1000; /* required amount of stack */
 
 /* Specify the memory areas */
 MEMORY
 {
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = %{SizeRAM}K
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = %{SizeFlash}K
+RAM1 (xrw)                 : ORIGIN = 0x20000008, LENGTH = (%{SizeRAM}K - 8)
+FLASH (rx)                 : ORIGIN = 0x08000000, LENGTH = %{SizeFlash}K
+RAM_SHARED (xrw)           : ORIGIN = 0x20030000, LENGTH = 10K
 }
 
 /* Define output sections */
@@ -54,12 +58,6 @@ SECTIONS
     . = ALIGN(4);
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
-  } >FLASH
-
-  .descriptor :
-  {
-    . = ALIGN(128);
-    KEEP(*(.descriptor)) /* Startup code */
   } >FLASH
 
   /* The program code and other data goes into FLASH */
@@ -120,23 +118,25 @@ SECTIONS
   _sidata = LOADADDR(.data);
 
   /* Initialized data sections goes into RAM, load LMA copy after code */
-  .data :
+  .data : 
   {
     . = ALIGN(4);
     _sdata = .;        /* create a global symbol at data start */
     *(.data)           /* .data sections */
     *(.data*)          /* .data* sections */
+    *(.RamFunc)        /* .RamFunc sections */
+    *(.RamFunc*)       /* .RamFunc* sections */
 
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
-  } >RAM AT> FLASH
+  } >RAM1 AT> FLASH
 
-
+  
   /* Uninitialized data section */
   . = ALIGN(4);
   .bss :
   {
-    /* This is used by the startup in order to initialize the .bss secion */
+    /* This is used by the startup in order to initialize the .bss section */
     _sbss = .;         /* define a global symbol at bss start */
     __bss_start__ = _sbss;
     *(.bss)
@@ -146,7 +146,7 @@ SECTIONS
     . = ALIGN(4);
     _ebss = .;         /* define a global symbol at bss end */
     __bss_end__ = _ebss;
-  } >RAM
+  } >RAM1
 
   /* User_heap_stack section, used to check that there is enough RAM left */
   ._user_heap_stack :
@@ -157,8 +157,9 @@ SECTIONS
     . = . + _Min_Heap_Size;
     . = . + _Min_Stack_Size;
     . = ALIGN(8);
-  } >RAM
+  } >RAM1
 
+  
 
   /* Remove information from the standard libraries */
   /DISCARD/ :
@@ -168,7 +169,12 @@ SECTIONS
     libgcc.a ( * )
   }
 
-  .ARM.attributes 0 : { *(.ARM.attributes) }
+  .ARM.attributes 0       : { *(.ARM.attributes) }
+   MAPPING_TABLE (NOLOAD) : { *(MAPPING_TABLE) } >RAM_SHARED
+   MB_MEM1 (NOLOAD)       : { *(MB_MEM1) } >RAM_SHARED
+   MB_MEM2 (NOLOAD)       : { _sMB_MEM2 = . ; *(MB_MEM2) ; _eMB_MEM2 = . ; } >RAM_SHARED
 }
+
+
 
 

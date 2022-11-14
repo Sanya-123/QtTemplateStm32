@@ -4,8 +4,8 @@
 
 **  File        : LinkerScript.ld
 **
-**  Abstract    : Linker script for STM32F407VGTx Device with
-**                1024KByte FLASH, 128KByte RAM
+**  Abstract    : Linker script for STM32F746NGHx Device with
+**                1024KByte FLASH, 320KByte RAM
 **
 **                Set heap size, stack size and stack location according
 **                to application requirements.
@@ -43,6 +43,7 @@ MEMORY
 {
 RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = %{SizeRAM}K
 FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = %{SizeFlash}K
+ITCMRAM (xrw)	: ORIGIN = 0x00000000, LENGTH = 16K
 }
 
 /* Define output sections */
@@ -54,12 +55,6 @@ SECTIONS
     . = ALIGN(4);
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
-  } >FLASH
-
-  .descriptor :
-  {
-    . = ALIGN(128);
-    KEEP(*(.descriptor)) /* Startup code */
   } >FLASH
 
   /* The program code and other data goes into FLASH */
@@ -120,7 +115,7 @@ SECTIONS
   _sidata = LOADADDR(.data);
 
   /* Initialized data sections goes into RAM, load LMA copy after code */
-  .data :
+  .data : 
   {
     . = ALIGN(4);
     _sdata = .;        /* create a global symbol at data start */
@@ -131,7 +126,7 @@ SECTIONS
     _edata = .;        /* define a global symbol at data end */
   } >RAM AT> FLASH
 
-
+  
   /* Uninitialized data section */
   . = ALIGN(4);
   .bss :
@@ -159,6 +154,7 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
+  
 
   /* Remove information from the standard libraries */
   /DISCARD/ :

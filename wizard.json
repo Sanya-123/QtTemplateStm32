@@ -30,7 +30,8 @@
                                             '%{SerialController}' === 'stm32l4xx' ? '%{TypeL4}' : \
                                             '%{SerialController}' === 'stm32l5xx' ? '%{TypeL5}' : \
                                             '%{SerialController}' === 'stm32u5xx' ? '%{TypeU5}' : \
-                                            '%{SerialController}' === 'stm32wbxx' ? '%{TypeWB}' : '' }" }
+                                            '%{SerialController}' === 'stm32wbxx' ? '%{TypeWB}' : '' }" },
+        { "key": "UseCCRAM", "value": "%{JS: '%{SerialController}' === 'stm32f3xx' || '%{SerialController}' === 'stm32f4xx'}" }
     ],
 
     "pages":
@@ -538,6 +539,18 @@
                     }
                 },
                 {
+                    "name": "SizeCCRAM",
+                    "trDisplayName": "size CCRAM memory [kB]",
+                    "type": "LineEdit",
+                    "condition": "%{UseCCRAM}",
+                    "visible": "%{UseCCRAM}",
+                    "data":
+                    {
+                        "trPlaceholder": "Enter memory size in kB",
+                        "validator": "(?:[1-9]{1}[0-9]{0,10})"
+                    }
+                },
+                {
                     "name": "UseMath",
                     "trDisplayName": "include math library",
                     "type": "CheckBox",
@@ -587,7 +600,7 @@
                     "target": "stm32.h"
                 },
                 {
-                    "source": "linkers/_FLASH.ld",
+                    "source": "linkers/%{SerialController}_FLASH.ld",
                     "target": "%{TypeDef}_FLASH.ld",
                     "openInEditor": true
                 },
