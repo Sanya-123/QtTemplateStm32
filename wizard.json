@@ -31,7 +31,8 @@
                                             '%{SerialController}' === 'stm32l5xx' ? '%{TypeL5}' : \
                                             '%{SerialController}' === 'stm32u5xx' ? '%{TypeU5}' : \
                                             '%{SerialController}' === 'stm32wbxx' ? '%{TypeWB}' : '' }" },
-        { "key": "UseCCRAM", "value": "%{JS: '%{SerialController}' === 'stm32f3xx' || '%{SerialController}' === 'stm32f4xx'}" }
+        { "key": "UseCCRAM", "value": "%{JS: '%{SerialController}' === 'stm32f3xx' || '%{SerialController}' === 'stm32f4xx'}" },
+        { "key": "LinkerScript", "value": "%{JS: '%{SerialController}' === 'stm32f3xx' || '%{SerialController}' === 'stm32f4xx' ? 'ccram' : 'simple'}" }
     ],
 
     "pages":
@@ -600,9 +601,13 @@
                     "target": "stm32.h"
                 },
                 {
-                    "source": "linkers/%{SerialController}_FLASH.ld",
+                    "source": "linkers/%{LinkerScript}_FLASH.ld",
                     "target": "%{TypeDef}_FLASH.ld",
                     "openInEditor": true
+                },
+                {
+                    "source": "linkers/in.version.ld",
+                    "target": "in.version.ld"
                 },
                 {
                     "source": "Driver",

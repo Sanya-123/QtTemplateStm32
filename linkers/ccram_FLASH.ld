@@ -4,8 +4,8 @@
 
 **  File        : LinkerScript.ld
 **
-**  Abstract    : Linker script for STM32F746NGHx Device with
-**                1024KByte FLASH, 320KByte RAM
+**  Abstract    : Linker script for STM32F407VGTx Device with
+**                1024KByte FLASH, 128KByte RAM
 **
 **                Set heap size, stack size and stack location according
 **                to application requirements.
@@ -38,12 +38,23 @@ _estack = ORIGIN(RAM) + LENGTH(RAM);    /* end of RAM */
 _Min_Heap_Size = 0x200;      /* required amount of heap  */
 _Min_Stack_Size = 0x400; /* required amount of stack */
 
+/* firmware version and date */
+%{JS: value('BuildSystem') === 'cmake' ? 'INCLUDE version.ld' : ''}
+_version_major = DEFINED(_version_major) ? _version_major : 0x00;
+_version_minor = DEFINED(_version_minor) ? _version_minor : 0x00;
+_subversion = DEFINED(_subversion) ? _subversion : 0x0000;
+
+_data = DEFINED(_data) ? _data : 0x00000000;
+_time = DEFINED(_time) ? _time : 0x0000;
+
+_git_size = DEFINED(_git_size) ? _git_size : 0x0000;
+
 /* Specify the memory areas */
 MEMORY
 {
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = %{SizeRAM}K
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = %{SizeFlash}K
-ITCMRAM (xrw)	: ORIGIN = 0x00000000, LENGTH = 16K
+  RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = %{SizeRAM}K
+  CCMRAM (xrw)      : ORIGIN = 0x10000000, LENGTH = %{SizeCCRAM}K
+  FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = %{SizeFlash}K
 }
 
 /* Define output sections */
@@ -55,6 +66,24 @@ SECTIONS
     . = ALIGN(4);
     KEEP(*(.isr_vector)) /* Startup code */
     . = ALIGN(4);
+  } >FLASH
+  
+  /* add build ID in flash NOTE use with flag -Wl,--build-id */
+  .gnu_build_id :
+  {
+    /* https://interrupt.memfault.com/blog/gnu-build-id-for-firmware */
+    PROVIDE(g_note_build_id = .);
+    *(.note.gnu.build-id)
+    /* ADD po version */
+    PROVIDE(note_build_specification = .); /* set point build specification */
+    BYTE(_version_major);
+    BYTE(_version_minor);
+    SHORT(_subversion);
+    /* add date and time here for coumfitble access */
+    LONG(_data);
+    SHORT(_time);
+    SHORT(_git_size);
+    %{JS: value('BuildSystem') === 'cmake' ? '"git_comit.txt" /* TODO set as const or include from file */' : ''}
   } >FLASH
 
   /* The program code and other data goes into FLASH */
@@ -125,6 +154,25 @@ SECTIONS
     . = ALIGN(4);
     _edata = .;        /* define a global symbol at data end */
   } >RAM AT> FLASH
+
+  _siccmram = LOADADDR(.ccmram);
+
+  /* CCM-RAM section 
+  * 
+  * IMPORTANT NOTE! 
+  * If initialized variables will be placed in this section,
+  * the startup code needs to be modified to copy the init-values.  
+  */
+  .ccmram :
+  {
+    . = ALIGN(4);
+    _sccmram = .;       /* create a global symbol at ccmram start */
+    *(.ccmram)
+    *(.ccmram*)
+    
+    . = ALIGN(4);
+    _eccmram = .;       /* create a global symbol at ccmram end */
+  } >CCMRAM AT> FLASH
 
   
   /* Uninitialized data section */

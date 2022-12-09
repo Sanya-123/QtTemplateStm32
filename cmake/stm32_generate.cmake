@@ -72,7 +72,7 @@ target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Linker options
 target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
-    "-Wl,--start-group"
+#    "-Wl,--start-group"
     -T${LINKER_SCRIPT}
 #    ${CPU_PARAMETERS}
     ${LINKER_OPTS}
@@ -88,7 +88,8 @@ target_link_options(${CMAKE_PROJECT_NAME} PRIVATE
 #    "-lstdc++"
 #    "-lsupc++"
 #    "-Wl,-z,max-page-size=8" # Allow good software remapping across address space (with proper GCC section making)
-    "-Wl,--end-group"
+    "-Wl,--build-id"
+#    "-Wl,--end-group"
 )
 
 # Execute post-build to print size
@@ -96,18 +97,22 @@ add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
     COMMAND ${CMAKE_SIZE} $<TARGET_FILE:${CMAKE_PROJECT_NAME}>
 )
 
-# Convert output to hex and binary
-add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.hex
-)
+if(CMAKE_OBJCOPY)
+    # Convert output to hex and binary
+    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_OBJCOPY} -O ihex $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.hex
+    )
 
-# Convert to bin file -> add conditional check?
-add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.bin
-)
+    # Convert to bin file -> add conditional check?
+    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_OBJCOPY} -O binary $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.bin
+    )
+endif()
 
 # get disasemmbler lst
-add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
-    COMMAND ${CMAKE_OBJCOPY} -D -S $<TARGET_FILE:${CMAKE_PROJECT_NAME}> ${CMAKE_PROJECT_NAME}.list
-)
+if(CMAKE_OBJDUMP)
+    add_custom_command(TARGET ${CMAKE_PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_OBJDUMP} -D -S $<TARGET_FILE:${CMAKE_PROJECT_NAME}> > ${CMAKE_PROJECT_NAME}.list
+    )
+endif()
 

@@ -42,9 +42,10 @@ set(CPU_PARAMETERS
 
 # Sources
 file(GLOB_RECURSE _SOURCE "")
-set(SOURCE  ${_SOURCE} "main.c"
-            "CMSIS/Source/Templates/gcc/startup_%{TypeDef}.s"
-            "CMSIS/Source/Templates/system_%{SerialController}.c")
+set(SOURCE  "CMSIS/Source/Templates/gcc/startup_%{TypeDef}.s"
+            "CMSIS/Source/Templates/system_%{SerialController}.c"
+            "${CMAKE_SOURCE_DIR}/%{TypeDef}_FLASH.ld"
+            ${_SOURCE} "main.c")
 
 # Include directories for each compiler
 set(INCLUDE "CMSIS/Include/"
@@ -69,3 +70,14 @@ set(LINKER_OPTS)
 
 # script for build
 include("cmake/stm32_generate.cmake")
+
+# generate version and date build in firmware
+set(VERSION "0.0")
+
+add_custom_target(${CMAKE_PROJECT_NAME}_version
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMENT "Generate time/data and git"
+    COMMAND ${CMAKE_COMMAND} -DVERSION=${VERSION} -DPATH_LD=${CMAKE_CURRENT_BINARY_DIR} -P "cmake/version.cmake"
+)
+
+add_dependencies(${CMAKE_PROJECT_NAME} ${CMAKE_PROJECT_NAME}_version)
