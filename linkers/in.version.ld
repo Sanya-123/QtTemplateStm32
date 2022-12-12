@@ -7,6 +7,8 @@ _date = @DATE@;
 _time = @TIME@;
 
 _git_size = @GIT_COMMIT_LEN@;
+_projec_name_lo = 0x@NAME_MD5_LO@;
+_projec_name_hi = 0x@NAME_MD5_HI@;
 
 TARGET(binary) /* specify the file format of binary file */
 INPUT ("@GIT_COMIT_FILE@") /* include the file */

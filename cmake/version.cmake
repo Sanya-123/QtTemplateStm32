@@ -56,6 +56,11 @@ TIME_STR_TO_INTS( hour minute ${BUILD_TIME})
 DATE_STR_TO_INTS( day month year ${BUILD_DATE})
 VERSION_STR_TO_INTS (VERSION_MAJOR VERSION_MINOR ${VERSION})
 
+#calc project name use md5
+string(MD5 NAME_MD5 ${PROJECTNAME})
+string(TOUPPER ${NAME_MD5} NAME_MD5)
+string(SUBSTRING ${NAME_MD5} 0 16 NAME_MD5_HI)
+string(SUBSTRING ${NAME_MD5} 16 16 NAME_MD5_LO)
 
 #counter build
 set(BUILD_COUNTER_PATH ".counter.user.build")
@@ -134,4 +139,6 @@ message("TIME: ${TIME}")
 message("VERSION: ${VERSION_MAJOR}.${VERSION_MINOR}.${SUBVERSION}")
 message("GIT_COMMIT: ${GIT_COMMIT}")
 message("GIT_COMMIT_LEN: ${GIT_COMMIT_LEN}")
+message("PROJECT_NAME: 0x${NAME_MD5_HI} 0x${NAME_MD5_LO}")
 #message("GIT_DIRTY: ${GIT_DIRTY}")
+

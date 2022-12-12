@@ -49,6 +49,9 @@ _time = DEFINED(_time) ? _time : 0x0000;
 
 _git_size = DEFINED(_git_size) ? _git_size : 0x0000;
 
+_projec_name_lo = DEFINED(_projec_name_lo) ? _projec_name_lo : 0x0000000000000000;
+_projec_name_hi = DEFINED(_projec_name_hi) ? _projec_name_hi : 0x0000000000000000;
+
 /* Specify the memory areas */
 MEMORY
 {
@@ -80,6 +83,8 @@ SECTIONS
     BYTE(_version_minor);
     SHORT(_subversion);
     /* add date and time here for coumfitble access */
+    QUAD(_projec_name_lo);
+    QUAD(_projec_name_hi);
     LONG(_data);
     SHORT(_time);
     SHORT(_git_size);
